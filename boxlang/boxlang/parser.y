@@ -1,9 +1,9 @@
 /* PROLOGUE */  
 %{
     #include <stdio.h>
-    int yyparse();
-    void yyerror(char *s);
-    int yylex (void);
+    extern int yyparse();
+    extern void yyerror(char *s);
+    extern int yylex (void);
 %}
 
 
@@ -25,19 +25,19 @@
 %%
 /* GRAMMAR RULES */
 
-sentence:                                  
-    '(' screens ',' print ',' time ')' { 
+sentence:                
+   LPAR screens TCOMMA print TCOMMA time RPAR { 
         printf("sentence!\n");
     }
-|   '(' screens ',' print ')' { 
+|   LPAR screens TCOMMA print RPAR { 
         printf("sentence!\n"); }
-|   '(' screens ',' sentence ',' time ')'       { printf("sentence!\n"); }
-|   '(' screens ',' sentence ')'                { printf("sentence!\n"); }
+|   LPAR screens TCOMMA sentence TCOMMA time RPAR       { printf("sentence!\n"); }
+|   LPAR screens TCOMMA sentence RPAR                { printf("sentence!\n"); }
 ;
 
 screens: 
-    '(' screens ')'                             { printf("screens!\n"); }
-|   screens ',' TINT                            { printf("sentence!\n"); }
+    LPAR screens RPAR                             { printf("screens!\n"); }
+|   screens TCOMMA TINT                            { printf("sentence!\n"); }
 |   TINT                                        { printf("sentence!\n"); }
 ;
 
@@ -46,23 +46,23 @@ time:
 ;
 
 print: 
-    '(' print ')'                               { printf("sentence!\n"); }
-|   '(' print ')' '(' draw ')'                  { printf("sentence!\n"); }
-|   '(' print ')' '(' write ')'                 { printf("sentence!\n"); }
+    LPAR print RPAR                               { printf("sentence!\n"); }
+|   LPAR print RPAR LPAR draw RPAR                  { printf("sentence!\n"); }
+|   LPAR print RPAR LPAR write RPAR                 { printf("sentence!\n"); }
 |   draw                                        { printf("sentence!\n"); }
 |   write                                       { printf("sentence!\n"); }
 ;
 
 write:
-    'write' '(' '\"' str '\"' ',' size ',' color ')' { printf("sentence!\n"); }
-|   'write' '(' '\"' str '\"' ',' size')'       { printf("sentence!\n"); }
-|   'write' '(' '\"' str '\"' ',' color')'      { printf("sentence!\n"); }
-|   'write' '(' '\"' str '\"' ')'               { printf("sentence!\n"); }
+    'write' LPAR TQTE str TQTE TCOMMA size TCOMMA color RPAR { printf("sentence!\n"); }
+|   'write' LPAR TQTE str TQTE TCOMMA size RPAR       { printf("sentence!\n"); }
+|   'write' LPAR TQTE str TQTE TCOMMA color RPAR      { printf("sentence!\n"); }
+|   'write' LPAR TQTE str TQTE RPAR               { printf("sentence!\n"); }
 ;
 
 draw:
-    'draw' '(' x ',' y ',' color ')'            { printf("sentence!\n"); }
-|   'draw' '(' x ',' y ')'                      { printf("sentence!\n"); }
+    'draw' LPAR x TCOMMA y TCOMMA color RPAR            { printf("sentence!\n"); }
+|   'draw' LPAR x TCOMMA y RPAR                      { printf("sentence!\n"); }
 ;
 
 str: 
@@ -92,6 +92,9 @@ color:
 
 /* Called by yyparse on error. */
 void yyerror (char *s) {
-  printf (stderr, "%s\n", s);
+  fprintf (stderr, "%s\n", s);
 }
 
+int main () {
+    yyparse();
+}
